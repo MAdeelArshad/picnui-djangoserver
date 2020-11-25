@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import response, decorators, permissions, status
 import json
-# from server.src.PoseDetection import PoseEstimation
+
+from PoseDetection import PoseEstimation
 
 # parser = argparse.ArgumentParser(description='tf-pose-estimation realtime webcam')
 #
@@ -21,7 +22,13 @@ import json
 # parser.add_argument('--tensorrt', type=str, default="False",
 #                     help='for tensorrt process.')
 # args = parser.parse_args()
+args = {
+    "model":"cmu",
+    "resize": "0x0",
+    "resize-out-ratio": 4.0,
+    "tensorrt": "False"
 
+}
 #    ______________    Recorded Video    ______________________
 
 @decorators.api_view(["POST"])
@@ -77,17 +84,17 @@ def CameraStaticImageEvent(request):
     print('DATA: ',reqData)
     print("Option: ", reqData['option'])
     print("File Path: ",reqData['url'])
-    # pose = PoseEstimation(option=reqData['option'])
-    #
-    # try:
-    #     keypoints = pose.getKeypoints()
-    # except:
-    #     return HttpResponse({'status':502})
-    # else:
-    #
-    #     return HttpResponse({'status': 200})
+    pose = PoseEstimation(option=reqData['option'])
 
-    pass
+    try:
+        keypoints = pose.getKeypoints()
+    except:
+        return HttpResponse({'status':502})
+    else:
+
+        return HttpResponse({'status': 200})
+
+
 
 
 #    ______________    Static Image    ______________________
@@ -101,16 +108,16 @@ def StaticImageEvent(request):
     print('DATA: ',reqData)
     print("Option: ", reqData['option'])
     print("File Path: ",reqData['url'])
-    # pose = PoseEstimation(option=reqData['option'],url=reqData['url'])
-    #
-    # try:
-    #     keypoints = pose.getKeypoints()
-    #
-    # except:
-    #     return HttpResponse({'status': 502})
-    #
-    # else:
-    #
-    #     return HttpResponse({'status': 200})
+    pose = PoseEstimation(option=reqData['option'],url=reqData['url'])
 
-    pass
+    try:
+        keypoints = pose.getKeypoints()
+
+    except:
+        return HttpResponse({'status': 502})
+
+    else:
+
+        return HttpResponse({'status': 200})
+
+
