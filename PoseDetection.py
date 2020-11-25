@@ -32,20 +32,22 @@ class PoseEstimation(object):
         image = None
         camera = 0
         # live stream ko abhi dekhna hai nechey
-        if self.options == "kinect image":
+        if self.option == "kinect image":
             print("after waiting")
             time.sleep(5)
             print("before waiting")
             image, ret_val = freenect.sync_get_video()
             image = cv.cvtColor(image, cv.COLOR_RGB2BGR)
-        elif self.options == "camera image":
+        elif self.option == "camera image":
             print("after waiting")
             time.sleep(5)
             print("before waiting")
             cam = cv.VideoCapture(camera)
             ret_val, image = cam.read()
-        elif self.options == "static image":
-            imagepath = "server/images" + self.options
+        elif self.option == "static image":
+            import os
+            print ()
+            imagepath ="server/images" + self.url
             image = cv.imread(imagepath)
         return image
 

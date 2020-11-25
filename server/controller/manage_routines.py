@@ -84,14 +84,14 @@ def CameraStaticImageEvent(request):
     print('DATA: ',reqData)
     print("Option: ", reqData['option'])
     print("File Path: ",reqData['url'])
-    pose = PoseEstimation(option=reqData['option'])
+    pose = PoseEstimation(args=args,option=reqData['option'])
 
     try:
         keypoints = pose.getKeypoints()
     except:
         return HttpResponse({'status':502})
     else:
-
+        print("keypoints", keypoints)
         return HttpResponse({'status': 200})
 
 
@@ -108,7 +108,7 @@ def StaticImageEvent(request):
     print('DATA: ',reqData)
     print("Option: ", reqData['option'])
     print("File Path: ",reqData['url'])
-    pose = PoseEstimation(option=reqData['option'],url=reqData['url'])
+    pose = PoseEstimation(args=args,option=reqData['option'],url=reqData['url'])
 
     try:
         keypoints = pose.getKeypoints()
@@ -117,7 +117,7 @@ def StaticImageEvent(request):
         return HttpResponse({'status': 502})
 
     else:
-
+        print("keypoints", keypoints)
         return HttpResponse({'status': 200})
 
 
