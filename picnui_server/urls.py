@@ -17,6 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
 from server.controller.manage_routines import *
+from server.views import testing
+
+
 urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^RecoredVideo/', RecordedVideoEvent),
@@ -24,6 +27,7 @@ urlpatterns = [
     url(r'^CameraLiveStream/', CameraLiveStreamEvent),
     url(r'^CameraStaticImage/', CameraStaticImageEvent),
     url(r'^StaticImage/', StaticImageEvent),
+    url(r'^testing/', testing),
 
 
 ]
