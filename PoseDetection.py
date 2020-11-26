@@ -9,7 +9,7 @@ from numpy.distutils.fcompiler import str2bool
 from tf_pose.estimator import TfPoseEstimator
 from tf_pose.networks import get_graph_path, model_wh
 
-from server.lifting.utils.prob_model import Prob3dPose
+from lifting.utils import Prob3dPose
 
 
 class PoseEstimation(object):
@@ -18,13 +18,13 @@ class PoseEstimation(object):
         self.args = args
         self.option = option
         self.url = url
-        self.w, self.h = model_wh(self.args.resize)
+        self.w, self.h = model_wh(self.args["resize"])
         if self.w > 0 and self.h > 0:
-            self.e = TfPoseEstimator(get_graph_path(self.args.model), target_size=(self.w, self.h),
-                                     trt_bool=str2bool(self.args.tensorrt))
+            self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(self.w, self.h),
+                                     trt_bool=str2bool(self.args["tensorrt"]))
         else:
-            self.e = TfPoseEstimator(get_graph_path(self.args.model), target_size=(432, 368),
-                                     trt_bool=str2bool(self.args.tensorrt))
+            self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(432, 368),
+                                     trt_bool=str2bool(self.args["tensorrt"]))
 
         self.poseLifting = Prob3dPose('lifting/prob_model/prob_model_params.mat')
 
@@ -32,20 +32,22 @@ class PoseEstimation(object):
         image = None
         camera = 0
         # live stream ko abhi dekhna hai nechey
-        if self.options == "kinect image":
+        if self.option == "kinect image":
             print("after waiting")
             time.sleep(5)
             print("before waiting")
             image, ret_val = freenect.sync_get_video()
             image = cv.cvtColor(image, cv.COLOR_RGB2BGR)
-        elif self.options == "camera image":
+        elif self.option == "camera image":
             print("after waiting")
             time.sleep(5)
             print("before waiting")
             cam = cv.VideoCapture(camera)
             ret_val, image = cam.read()
-        elif self.options == "static image":
-            imagepath = "server/images" + self.options
+        elif self.option == "static image":
+            import os
+            print ()
+            imagepath ="server/images" + self.url
             image = cv.imread(imagepath)
         return image
 
@@ -57,7 +59,7 @@ class PoseEstimation(object):
         visibilities = []
 
         humans = self.e.inference(image, resize_to_default=(self.w > 0 and self.h > 0),
-                                  upsample_size=self.args.resize_out_ratio)
+                                  upsample_size=self.args["resize_out_ratio"])
 
         for human in humans:
             pose_2d_mpii, visibility = common.MPIIPart.from_coco(human)
@@ -80,7 +82,7 @@ class PoseEstimation(object):
 
     """
     return 3d keypoints
-    
+
     """
 
     def getKeypoints(self):
