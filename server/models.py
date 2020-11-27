@@ -6,12 +6,18 @@ from djongo import models
 class Routine(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
-
-
 class RobotProfile(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    points = models.JSONField(default={})
-    routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+
+class Points(models.Model):
+    points = models.JSONField()
+    robotProfile = models.ForeignKey(RobotProfile, on_delete=models.CASCADE)
+
+
+
+
+
+
 
 
 

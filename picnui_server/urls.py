@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^CameraLiveStream/', CameraLiveStreamEvent),
     url(r'^CameraStaticImage/', CameraStaticImageEvent),
     url(r'^StaticImage/', StaticImageEvent),
+    url(r'^SaveRoutine/', SaveRoutineEvent),
     url(r'^testing/', testing),
 
 
