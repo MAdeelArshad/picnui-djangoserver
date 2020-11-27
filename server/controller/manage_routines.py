@@ -47,7 +47,7 @@ def RecordedVideoEvent(request):
     reqData = json.loads(request.body)
     print("Option: ", reqData['option'])
     print("File Path: ",reqData['url'])
-
+``
 
     return HttpResponse({'status': 200})
 
