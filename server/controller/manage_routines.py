@@ -26,16 +26,11 @@ from PoseDetection import PoseEstimation
 from server.models import RobotProfile, Points
 
 args = {
-    "model":"cmu",
-    "resize": "0x0",
-    "resize-out-ratio": float(4.0),
+    "model": 'cmu',
+    "resize": '0x0',
+    "resize-out-ratio": float(4),
     "tensorrt": "False"
-
 }
-
-
-def RandNum():
-    return random.randint(-10, 10)
 
 
 #    ______________    Recorded Video    ______________________
@@ -43,11 +38,9 @@ def RandNum():
 @decorators.api_view(["POST"])
 @decorators.permission_classes([permissions.AllowAny])
 def RecordedVideoEvent(request):
-
     reqData = json.loads(request.body)
     print("Option: ", reqData['option'])
-    print("File Path: ",reqData['url'])
-
+    print("File Path: ", reqData['url'])
 
     return HttpResponse({'status': 200})
 
@@ -57,65 +50,58 @@ def RecordedVideoEvent(request):
 @decorators.api_view(["POST"])
 @decorators.permission_classes([permissions.AllowAny])
 def KinectLiveStreamEvent(request):
-
     reqData = json.loads(request.body)
 
-    print('DATA: ',reqData)
+    print('DATA: ', reqData)
     print("Option: ", reqData['option'])
-    print("File Path: ",reqData['url'])
-
+    print("File Path: ", reqData['url'])
 
     return HttpResponse({'status': 200})
+
 
 #    ______________    Camera Live Stream    ______________________
 
 @decorators.api_view(["POST"])
 @decorators.permission_classes([permissions.AllowAny])
 def CameraLiveStreamEvent(request):
-
     reqData = json.loads(request.body)
 
-    print('DATA: ',reqData)
+    print('DATA: ', reqData)
     print("Option: ", reqData['option'])
-    print("File Path: ",reqData['url'])
-
+    print("File Path: ", reqData['url'])
 
     return HttpResponse({'status': 200})
+
 
 #    ______________    Camera Static Image    ______________________
 
 @decorators.api_view(["POST"])
 @decorators.permission_classes([permissions.AllowAny])
 def CameraStaticImageEvent(request):
-
     reqData = json.loads(request.body)
 
-    print('DATA: ',reqData)
+    print('DATA: ', reqData)
     print("Option: ", reqData['option'])
-    print("File Path: ",reqData['url'])
-    # points = RandNum()
 
-
-
-    pose = PoseEstimation(args=args,option=reqData['option'])
+    
+    print("File Path: ", reqData['url'])
+    pose = PoseEstimation(args=args, option=reqData['option'])
 
     try:
         keypoints = pose.getKeypoints()
     except:
-        return HttpResponse({'status':502})
+        return HttpResponse({'status': 502})
     else:
         print("keypoints", keypoints)
-        return HttpResponse({'status': 200})
-    data = {
+
+        data = {
         "status": 200,
         "points": {'x': keypoints[0],
                     'y': keypoints[1],
                     'z': keypoints[2],
                    'image': reqData['url']}
     }
-
     return JsonResponse(data)
-
 
 
 #    ______________    Static Image    ______________________
@@ -123,13 +109,12 @@ def CameraStaticImageEvent(request):
 @decorators.api_view(["POST"])
 @decorators.permission_classes([permissions.AllowAny])
 def StaticImageEvent(request):
-
     reqData = json.loads(request.body)
 
-    print('DATA: ',reqData)
+    print('DATA: ', reqData)
     print("Option: ", reqData['option'])
-    print("File Path: ",reqData['url'])
-    # pose = PoseEstimation(args=args,option=reqData['option'],url=reqData['url'])
+    print("File Path: ", reqData['url'])
+    pose = PoseEstimation(args=args, option=reqData['option'], url=reqData['url'])
 
     # try:
     #     keypoints = pose.getKeypoints()
@@ -162,3 +147,6 @@ def SaveRoutineEvent(request):
     #     print("Points PK: ", p.id)
 
     return JsonResponse(reqData, safe=False)
+    else:
+        print("keypoints", keypoints)
+        return HttpResponse({'status': 200})
