@@ -74,9 +74,7 @@ class PoseEstimation(object):
 
         keypoints = pose_3d[0].transpose()
         keypoints = keypoints / 100
-        print(" \n")
 
-        print(keypoints)
         return keypoints[13]
 
     """
@@ -86,6 +84,7 @@ class PoseEstimation(object):
 
     def getKeypoints(self):
         image = self.get_frame()
+        keypoints = []
         try:
             keypoints = self.mesh(image)
         except AssertionError:
@@ -93,7 +92,4 @@ class PoseEstimation(object):
             return Exception("body not in image")
 
         else:
-            print(keypoints + " Left hand ")
-            
             return keypoints
-            pass

@@ -40,8 +40,8 @@ args = {
 def RecordedVideoEvent(request):
     reqData = json.loads(request.body)
     print("Option: ", reqData['option'])
+    print("File Path: ",reqData['url'])
     print("File Path: ", reqData['url'])
-
     return HttpResponse({'status': 200})
 
 
@@ -90,7 +90,7 @@ def CameraStaticImageEvent(request):
     try:
         keypoints = pose.getKeypoints()
     except:
-        return HttpResponse({'status': 502})
+        return JsonResponse({'status': 502})
     else:
         print("keypoints", keypoints)
 
@@ -116,16 +116,23 @@ def StaticImageEvent(request):
     print("File Path: ", reqData['url'])
     pose = PoseEstimation(args=args, option=reqData['option'], url=reqData['url'])
 
-    # try:
-    #     keypoints = pose.getKeypoints()
-    #
-    # except:
-    #     return HttpResponse({'status': 502})
-    #
-    # else:
-    #     print("keypoints", keypoints)
-    #     return HttpResponse({'status': 200})
+    try:
+        keypoints = pose.getKeypoints()
 
+    except:
+        return JsonResponse({'status': 502})
+
+    else:
+        print("keypoints", keypoints)
+
+        data = {
+            "status": 200,
+            "points": {'x': keypoints[0],
+                       'y': keypoints[1],
+                       'z': keypoints[2],
+                       'image': reqData['url']}
+        }
+    return JsonResponse(data)
 
 
 #    ______________    Save Routine Event    ______________________
@@ -147,6 +154,3 @@ def SaveRoutineEvent(request):
     #     print("Points PK: ", p.id)
 
     return JsonResponse(reqData, safe=False)
-    else:
-        print("keypoints", keypoints)
-        return HttpResponse({'status': 200})
