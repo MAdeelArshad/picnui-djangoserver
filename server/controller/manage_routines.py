@@ -1,9 +1,10 @@
 import argparse
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import response, decorators, permissions, status
 import json
+import random
 
 from PoseDetection import PoseEstimation
 
@@ -22,6 +23,8 @@ from PoseDetection import PoseEstimation
 # parser.add_argument('--tensorrt', type=str, default="False",
 #                     help='for tensorrt process.')
 # args = parser.parse_args()
+from server.models import RobotProfile, Points
+
 args = {
     "model": 'cmu',
     "resize": '0x0',
@@ -79,6 +82,8 @@ def CameraStaticImageEvent(request):
 
     print('DATA: ', reqData)
     print("Option: ", reqData['option'])
+
+    
     print("File Path: ", reqData['url'])
     pose = PoseEstimation(args=args, option=reqData['option'])
 
@@ -88,7 +93,15 @@ def CameraStaticImageEvent(request):
         return HttpResponse({'status': 502})
     else:
         print("keypoints", keypoints)
-        return HttpResponse({'status': 200})
+
+        data = {
+        "status": 200,
+        "points": {'x': keypoints[0],
+                    'y': keypoints[1],
+                    'z': keypoints[2],
+                   'image': reqData['url']}
+    }
+    return JsonResponse(data)
 
 
 #    ______________    Static Image    ______________________
@@ -103,12 +116,37 @@ def StaticImageEvent(request):
     print("File Path: ", reqData['url'])
     pose = PoseEstimation(args=args, option=reqData['option'], url=reqData['url'])
 
-    try:
-        keypoints = pose.getKeypoints()
+    # try:
+    #     keypoints = pose.getKeypoints()
+    #
+    # except:
+    #     return HttpResponse({'status': 502})
+    #
+    # else:
+    #     print("keypoints", keypoints)
+    #     return HttpResponse({'status': 200})
 
-    except:
-        return HttpResponse({'status': 502})
 
+
+#    ______________    Save Routine Event    ______________________
+
+@decorators.api_view(["POST"])
+@decorators.permission_classes([permissions.AllowAny])
+def SaveRoutineEvent(request):
+
+    reqData = json.loads(request.body)
+
+    print('DATA: ',reqData)
+    print(type(reqData))
+
+    # rp = RobotProfile(name="Example 1")
+    #
+    # for e in reqData:
+    #     print(e)
+    #     p = Points(points=e, robotProfile=rp)
+    #     print("Points PK: ", p.id)
+
+    return JsonResponse(reqData, safe=False)
     else:
         print("keypoints", keypoints)
         return HttpResponse({'status': 200})
