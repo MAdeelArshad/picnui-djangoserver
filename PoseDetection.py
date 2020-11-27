@@ -45,9 +45,8 @@ class PoseEstimation(object):
             cam = cv.VideoCapture(camera)
             ret_val, image = cam.read()
         elif self.option == "static image":
-            import os
-            print ()
-            imagepath ="server/images" + self.url
+
+            imagepath = "server/images" + self.url
             image = cv.imread(imagepath)
         return image
 
@@ -59,7 +58,7 @@ class PoseEstimation(object):
         visibilities = []
 
         humans = self.e.inference(image, resize_to_default=(self.w > 0 and self.h > 0),
-                                  upsample_size=self.args["resize_out_ratio"])
+                                  upsample_size=self.args["resize-out-ratio"])
 
         for human in humans:
             pose_2d_mpii, visibility = common.MPIIPart.from_coco(human)
@@ -92,9 +91,9 @@ class PoseEstimation(object):
         except AssertionError:
             print("body not in image")
             return Exception("body not in image")
-        except Exception:
-            print("General exception")
-            return Exception("General exception")
+
         else:
+            print(keypoints + " Left hand ")
+            
             return keypoints
             pass
