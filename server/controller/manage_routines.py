@@ -5,8 +5,9 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework import response, decorators, permissions, status
 import json
 import random
-
+from django.core import serializers
 from PoseDetection import PoseEstimation
+from collections import OrderedDict
 
 # parser = argparse.ArgumentParser(description='tf-pose-estimation realtime webcam')
 #
@@ -23,7 +24,9 @@ from PoseDetection import PoseEstimation
 # parser.add_argument('--tensorrt', type=str, default="False",
 #                     help='for tensorrt process.')
 # args = parser.parse_args()
-from server.models import RobotProfile, Points
+
+# from server.models import RobotProfile, Points
+from server.models import *
 
 args = {
     "model": 'cmu',
@@ -146,6 +149,21 @@ def SaveRoutineEvent(request):
     print('DATA: ',reqData)
     print(type(reqData))
 
+
+    print(reqData['RoutineName'])
+    for p in reqData['Points']:
+        print(p)
+
+    routine = Routine(name=reqData['RoutineName'])
+    routine.save()
+    for p in reqData['Points']:
+
+        point = Points(points=p,routine=routine)
+        point.save()
+        print("point id: " , point.id)
+        print("point routine id: " , point.routine.id)
+
+
     # rp = RobotProfile(name="Example 1")
     #
     # for e in reqData:
@@ -153,4 +171,228 @@ def SaveRoutineEvent(request):
     #     p = Points(points=e, robotProfile=rp)
     #     print("Points PK: ", p.id)
 
+    print(Routine.objects.all())
+    print(Points.objects.all())
+
     return JsonResponse(reqData, safe=False)
+
+
+
+#    ______________    Get All Routines Event    ______________________
+
+@decorators.api_view(["GET"])
+@decorators.permission_classes([permissions.AllowAny])
+def GetRoutinesEvent(request):
+    # Points.objects.all()
+
+    ResponsePointArray = []
+    duplicateChecker = []
+
+    LoadedPoints = json.loads(serializers.serialize('json', Points.objects.all()))
+    for p in LoadedPoints:
+        # print(p)
+        # print(p['fields'])
+        getRoutine = json.loads(serializers.serialize('json', Routine.objects.filter(pk=p['fields']['routine'])))
+        getRoutineName = getRoutine[0]['fields']['name']
+
+        getPoints = dict(eval(p['fields']['points']))
+        routinePK = p['fields']['routine']
+
+        if routinePK in duplicateChecker:
+            for e in ResponsePointArray:
+                if routinePK == e['routineID']:
+                    e['points'].append(getPoints)
+
+            pass
+        else:
+            ResponsePointArray.append({
+                'routineName': getRoutineName,
+                'points': [getPoints],
+                'routineID': routinePK
+            })
+            duplicateChecker.append(routinePK)
+
+
+
+
+
+    routineData = {'routineData': ResponsePointArray}
+
+    return JsonResponse(routineData, safe=False)
+
+#    ______________    Delete Routine Event    ______________________
+
+
+@decorators.api_view(["DELETE"])
+@decorators.permission_classes([permissions.AllowAny])
+def DeleteRoutineEvent(request):
+
+    reqData = json.loads(request.body)
+    print(reqData)
+
+    try:
+        r = Routine.objects.get(id=reqData['routinePK'])
+        print(r.delete())
+    except:
+        routineData = {'isDeleted': False, 'routine': reqData}
+        print("Something went wrong and Rouitne not Deleted")
+    else:
+        routineData = {'isDeleted': True, 'routine': reqData}
+        print("Nothing went wrong and Routine is Deleted")
+
+    return JsonResponse(routineData, safe=False)
+
+
+#    ______________    Update Routine Event    ______________________
+
+
+@decorators.api_view(["PUT"])
+@decorators.permission_classes([permissions.AllowAny])
+def UpdateRoutineEvent(request):
+
+    reqData = json.loads(request.body)
+    print(reqData)
+
+
+    r = Routine.objects.get(id=reqData['routineID'])
+    r.name = reqData['newRoutineName']
+    r.save()
+
+
+    routineData = {'isUpdated': True}
+
+    return JsonResponse(routineData, safe=False)
+
+#    ______________    Save Robot Profile Event    ______________________
+
+@decorators.api_view(["POST"])
+@decorators.permission_classes([permissions.AllowAny])
+def SaveRobotProfileEvent(request):
+
+    reqData = json.loads(request.body)
+
+    print('DATA: ',reqData)
+
+
+
+    profile = RobotProfile(name=reqData['ProfileName'], linkedRoutine=reqData['LinkedRoutine'])
+    profile.save()
+
+
+
+    return JsonResponse({'isSaved': True}, safe=False)
+
+
+#    ______________    Get All Robot Profiles Event    ______________________
+
+@decorators.api_view(["GET"])
+@decorators.permission_classes([permissions.AllowAny])
+def GetRobotProfilesEvent(request):
+
+    Profiles = []
+    rawProfiles = json.loads(serializers.serialize('json', RobotProfile.objects.all()))
+    for p in rawProfiles:
+        Profiles.append({'profilePK': p['pk'], 'profile': p['fields']})
+
+
+
+    print(Profiles)
+
+
+
+    return JsonResponse({'ProfilesList': Profiles}, safe=False)
+
+
+
+#    ______________    Delete Robot Profile Event    ______________________
+
+
+@decorators.api_view(["DELETE"])
+@decorators.permission_classes([permissions.AllowAny])
+def DeleteRobotProfileEvent(request):
+
+    reqData = json.loads(request.body)
+    print(reqData)
+
+    try:
+        r = RobotProfile.objects.get(id=reqData['profilePK'])
+        print(r.delete())
+    except:
+        routineData = {'isDeleted': False, 'routine': reqData}
+        print("Something went wrong and Rouitne not Deleted")
+    else:
+        routineData = {'isDeleted': True, 'routine': reqData}
+        print("Nothing went wrong and Routine is Deleted")
+
+    return JsonResponse(routineData, safe=False)
+
+
+#    ______________    Update Robot Profile Event    ______________________
+
+
+@decorators.api_view(["PUT"])
+@decorators.permission_classes([permissions.AllowAny])
+def UpdateRobotProfileEvent(request):
+
+    reqData = json.loads(request.body)
+    print(reqData)
+
+
+    try:
+        p = RobotProfile.objects.get(id=reqData['profilePK'])
+        p.name = reqData['NewProfileName']
+        p.save()
+        routineData = {'isUpdated': True}
+    except:
+        routineData = {'isUpdated': False}
+
+    return JsonResponse(routineData, safe=False)
+
+#    ______________    Get All Robot Profiles Along with Linked routines Event    ______________________
+
+@decorators.api_view(["POST"])
+@decorators.permission_classes([permissions.AllowAny])
+def GetRobotProfilesWithRoutineEvent(request):
+    reqData = json.loads(request.body)
+    print(reqData)
+
+    ResponsePointArray = []
+    duplicateChecker = []
+
+    LoadedPoints = json.loads(serializers.serialize('json', Points.objects.all()))
+    for p in LoadedPoints:
+        # print(p)
+        # print(p['fields'])
+        getRoutine = json.loads(serializers.serialize('json', Routine.objects.filter(pk=p['fields']['routine'])))
+        getRoutineName = getRoutine[0]['fields']['name']
+
+        getPoints = dict(eval(p['fields']['points']))
+        routinePK = p['fields']['routine']
+
+        if routinePK in duplicateChecker:
+            for e in ResponsePointArray:
+                if routinePK == e['routineID']:
+                    e['points'].append(getPoints)
+
+            pass
+        else:
+            ResponsePointArray.append({
+                'routineName': getRoutineName,
+                'points': [getPoints],
+                'routineID': routinePK
+            })
+            duplicateChecker.append(routinePK)
+
+    # routineData = {'routineData': ResponsePointArray}
+
+    routine = {}
+
+    for e in ResponsePointArray:
+        if e['routineID'] == reqData['routinePK']:
+            routine = e
+            break
+
+    print(routine)
+
+    return JsonResponse(routine, safe=False)
+
