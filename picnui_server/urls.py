@@ -28,6 +28,14 @@ urlpatterns = [
     url(r'^CameraStaticImage/', CameraStaticImageEvent),
     url(r'^StaticImage/', StaticImageEvent),
     url(r'^SaveRoutine/', SaveRoutineEvent),
+    url(r'^GetRoutines/', GetRoutinesEvent),
+    url(r'^DeleteRoutine/', DeleteRoutineEvent),
+    url(r'^UpdateRoutine/', UpdateRoutineEvent),
+    url(r'^SaveRobotProfile/', SaveRobotProfileEvent),
+    url(r'^GetRobotProfiles/', GetRobotProfilesEvent),
+    url(r'^DeleteRobotProfile/', DeleteRobotProfileEvent),
+    url(r'^UpdateRobotProfile/', UpdateRobotProfileEvent),
+    url(r'^GetRobotProfileWithRoutine/', GetRobotProfilesWithRoutineEvent),
     url(r'^testing/', testing),
 
 
