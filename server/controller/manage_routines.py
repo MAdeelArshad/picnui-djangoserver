@@ -1,5 +1,5 @@
 import argparse
-
+import socket
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from rest_framework import response, decorators, permissions, status
@@ -340,9 +340,14 @@ def UpdateRobotProfileEvent(request):
 
     try:
         p = RobotProfile.objects.get(id=reqData['profilePK'])
-        p.name = reqData['NewProfileName']
-        p.save()
-        routineData = {'isUpdated': True}
+        if reqData['ChangeLinking'] == True:
+            p.linkedRoutine = reqData['linkedRoutine']
+            p.save()
+            routineData = {'isUpdated': True}
+        elif reqData['ChangeLinking'] == False:
+            p.name = reqData['NewProfileName']
+            p.save()
+            routineData = {'isUpdated': True}
     except:
         routineData = {'isUpdated': False}
 
@@ -396,3 +401,59 @@ def GetRobotProfilesWithRoutineEvent(request):
 
     return JsonResponse(routine, safe=False)
 
+
+#    ______________    Trigger Webots Simulation Event    ______________________
+
+@decorators.api_view(["POST"])
+@decorators.permission_classes([permissions.AllowAny])
+def TriggerWebotsSimEvent(request):
+    reqData = json.loads(request.body)
+    print(reqData)
+    print("Webots Simulation Event Triggered!")
+
+    errorCheckStatus = False
+    errorMessage = ''
+
+    s = socket.socket()
+    print("Socket successfully created")
+    port = 4096
+    try:
+        s.bind(('', port))
+        print("socket binded to %s" % (port))
+        # put the socket into listening mode
+        s.listen(5)
+        print("socket is listening")
+    except Exception as e:
+        errorCheckStatus = True
+        errorMessage = str(e)
+        print(str(e))
+        # print("Something went wrong")
+    finally:
+        # s.close()
+        if errorCheckStatus == False:
+            while True:
+                c, addr = s.accept()
+                print('Got connection from', addr)
+                reply = 'Thank you for connecting'
+                command = 'MOVE_L | 3.0 | 35'
+                c.send(command.encode('utf-8'))
+                c.close()
+
+
+
+
+
+    data = {'errorMessage': errorMessage, 'errorCheckStatus': errorCheckStatus}
+
+    return JsonResponse(data, safe=False)
+
+#    ______________    Trigger UR Simulation Event    ______________________
+
+@decorators.api_view(["POST"])
+@decorators.permission_classes([permissions.AllowAny])
+def TriggerURSimEvent(request):
+    reqData = json.loads(request.body)
+    print(reqData)
+    print("UR Simulation Event Triggered!")
+
+    return JsonResponse({}, safe=False)
