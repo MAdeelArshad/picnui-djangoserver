@@ -36,6 +36,8 @@ urlpatterns = [
     url(r'^DeleteRobotProfile/', DeleteRobotProfileEvent),
     url(r'^UpdateRobotProfile/', UpdateRobotProfileEvent),
     url(r'^GetRobotProfileWithRoutine/', GetRobotProfilesWithRoutineEvent),
+    url(r'^TriggerWebotsSim/', TriggerWebotsSimEvent),
+    url(r'^TriggerURSim/', TriggerURSimEvent),
     url(r'^testing/', testing),
 
 
