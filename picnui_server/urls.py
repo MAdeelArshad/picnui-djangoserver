@@ -19,7 +19,6 @@ from django.conf.urls import url, include
 from server.controller.manage_routines import *
 from server.views import testing
 
-
 urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^RecoredVideo/', RecordedVideoEvent),
@@ -42,3 +41,6 @@ urlpatterns = [
 
 
 ]
+
+
+

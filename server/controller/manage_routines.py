@@ -27,14 +27,16 @@ from collections import OrderedDict
 
 # from server.models import RobotProfile, Points
 from server.models import *
+from TrainModel import trainModel
 
-args = {
-    "model": 'cmu',
-    "resize": '0x0',
-    "resize-out-ratio": float(4),
-    "tensorrt": "False"
-}
+# args = {
+#     "model": 'cmu',
+#     "resize": '0x0',
+#     "resize-out-ratio": float(4),
+#     "tensorrt": "False"
+# }
 
+args=trainModel();
 
 #    ______________    Recorded Video    ______________________
 

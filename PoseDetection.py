@@ -18,15 +18,15 @@ class PoseEstimation(object):
         self.args = args
         self.option = option
         self.url = url
-        self.w, self.h = model_wh(self.args["resize"])
-        if self.w > 0 and self.h > 0:
-            self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(self.w, self.h),
-                                     trt_bool=str2bool(self.args["tensorrt"]))
-        else:
-            self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(432, 368),
-                                     trt_bool=str2bool(self.args["tensorrt"]))
-
-        self.poseLifting = Prob3dPose('lifting/prob_model/prob_model_params.mat')
+        # self.w, self.h = model_wh(self.args["resize"])
+        # if self.w > 0 and self.h > 0:
+        #     self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(self.w, self.h),
+        #                              trt_bool=str2bool(self.args["tensorrt"]))
+        # else:
+        #     self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(432, 368),
+        #                              trt_bool=str2bool(self.args["tensorrt"]))
+        #
+        # self.poseLifting = Prob3dPose('lifting/prob_model/prob_model_params.mat')
 
     def get_frame(self):
         image = None
@@ -57,8 +57,11 @@ class PoseEstimation(object):
         pose_2d_mpiis = []
         visibilities = []
 
-        humans = self.e.inference(image, resize_to_default=(self.w > 0 and self.h > 0),
-                                  upsample_size=self.args["resize-out-ratio"])
+        # humans = self.e.inference(image, resize_to_default=(self.w > 0 and self.h > 0),
+        #                           upsample_size=self.args["resize-out-ratio"])
+
+        humans = self.args["estimator"].inference(image, resize_to_default=(self.args["width"] > 0 and self.args["height"] > 0),
+                                  upsample_size= float(4))
 
         for human in humans:
             pose_2d_mpii, visibility = common.MPIIPart.from_coco(human)
@@ -69,8 +72,8 @@ class PoseEstimation(object):
 
         pose_2d_mpiis = np.array(pose_2d_mpiis)
         visibilities = np.array(visibilities)
-        transformed_pose2d, weights = self.poseLifting.transform_joints(pose_2d_mpiis, visibilities)
-        pose_3d = self.poseLifting.compute_3d(transformed_pose2d, weights)
+        transformed_pose2d, weights = self.args["pose"].transform_joints(pose_2d_mpiis, visibilities)
+        pose_3d = self.args["pose"].compute_3d(transformed_pose2d, weights)
 
         keypoints = pose_3d[0].transpose()
         keypoints = keypoints / 100
