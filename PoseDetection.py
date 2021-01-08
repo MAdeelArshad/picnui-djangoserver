@@ -1,3 +1,4 @@
+import sys
 import time
 
 import cv2 as cv
@@ -5,33 +6,22 @@ import freenect
 import numpy as np
 
 import tf_pose.common as common
-from numpy.distutils.fcompiler import str2bool
-from tf_pose.estimator import TfPoseEstimator
-from tf_pose.networks import get_graph_path, model_wh
 
-from lifting.utils import Prob3dPose
+
+def get_camera_image():
+    cam = cv.VideoCapture(0)
+    ret_val, image = cam.read()
+    return image
 
 
 class PoseEstimation(object):
 
-    def __init__(self, args, option=None, url=None):
+    def __init__(self, args):
         self.args = args
-        self.option = option
-        self.url = url
-        # self.w, self.h = model_wh(self.args["resize"])
-        # if self.w > 0 and self.h > 0:
-        #     self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(self.w, self.h),
-        #                              trt_bool=str2bool(self.args["tensorrt"]))
-        # else:
-        #     self.e = TfPoseEstimator(get_graph_path(self.args["model"]), target_size=(432, 368),
-        #                              trt_bool=str2bool(self.args["tensorrt"]))
-        #
-        # self.poseLifting = Prob3dPose('lifting/prob_model/prob_model_params.mat')
 
     def get_frame(self):
+
         image = None
-        camera = 0
-        # live stream ko abhi dekhna hai nechey
         if self.option == "kinect image":
             print("after waiting")
             time.sleep(5)
@@ -42,26 +32,21 @@ class PoseEstimation(object):
             print("after waiting")
             time.sleep(5)
             print("before waiting")
-            cam = cv.VideoCapture(camera)
-            ret_val, image = cam.read()
+            image = get_camera_image()
         elif self.option == "static image":
-
             imagepath = "server/images" + self.url
             image = cv.imread(imagepath)
         return image
 
     def mesh(self, image):
-        # image_h, image_w = image.shape[:2]
         width = 640
         height = 480
         pose_2d_mpiis = []
         visibilities = []
 
-        # humans = self.e.inference(image, resize_to_default=(self.w > 0 and self.h > 0),
-        #                           upsample_size=self.args["resize-out-ratio"])
-
-        humans = self.args["estimator"].inference(image, resize_to_default=(self.args["width"] > 0 and self.args["height"] > 0),
-                                  upsample_size= float(4))
+        humans = self.args["estimator"].inference(image, resize_to_default=(
+                    self.args["width"] > 0 and self.args["height"] > 0),
+                                                  upsample_size=float(4))
 
         for human in humans:
             pose_2d_mpii, visibility = common.MPIIPart.from_coco(human)
@@ -74,7 +59,6 @@ class PoseEstimation(object):
         visibilities = np.array(visibilities)
         transformed_pose2d, weights = self.args["pose"].transform_joints(pose_2d_mpiis, visibilities)
         pose_3d = self.args["pose"].compute_3d(transformed_pose2d, weights)
-
         keypoints = pose_3d[0].transpose()
         keypoints = keypoints / 100
 
@@ -85,9 +69,10 @@ class PoseEstimation(object):
 
     """
 
-    def getKeypoints(self):
+    def getKeypoints(self, option=None, url=None):
+        self.option = option
+        self.url = url
         image = self.get_frame()
-        keypoints = []
         try:
             keypoints = self.mesh(image)
         except AssertionError:
