@@ -7,10 +7,9 @@ This servise is based on Django server which contain REST API to entertain the R
 3. The project supports two environments (i) WEBOTS Simulations and (ii) UR Virtual Machine. Interpreter will decide which environment is to be used. UR Virtual Machine (URVM) will get extracted features to generate Poly-scope commands and then deploy them on cobot. Cobot will give responses according to commands in the simulated environment. WEBOTS Simulations will get the inputs from the interpreter and will send actions to the cobots using a high-level language, in our case it is Python. Actions will be decided intelligently by a system based on user interaction. Actions will be stored in the memory of cobot and the system will enable the cobot to repeat the task to improve the accuracy of movement. 
 
 The below image calculate the 2d Point cloud and its vectormap 
-![](server/images/demo1)
-
+![](server/images/demo1.png)
 The below image calculate the 3d point cloud and show it in PYQTGraph
-![](server/images/demo2)
+![](server/images/demo2.png)
 
 ## Installation:
 #### ubuntu:
