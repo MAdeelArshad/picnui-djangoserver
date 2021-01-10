@@ -20,6 +20,10 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 	sudo apt update 
 	sudo apt-get install git cmake build-essential libusb-1.0-0-dev
 	sudo apt install python-numpy
+	sudo apt-get install libgl1-mesa-dev
+	sudo apt-get install python-dev python3-dev
+	sudo apt-get install libopencv-*
+	pip install opencv-contrib-python
 ```
 
 
@@ -58,6 +62,7 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 	cd tf-pose-estimation
 	pip install -r requirements.txt
 	conda install swig
+	pip install tf-slim
 	cd tf_pose/pafprocess
 	swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
 	cd ../../
@@ -76,6 +81,47 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
     pip install djangorestframework
     pip install django-cors-headers
 ```
+7. Install additional libraries for WEBOTS 
+
+```
+	sudo apt install ffmpeg
+	sudo apt install libfreeimage3
+	sudo apt install libfreeimage3
+	sudo apt install libssh-dev
+	sudo apt install libzip-dev
+```
+
+8. Install webots enviornment  .deb package from its website <https://cyberbotics.com/doc/guide/installation-procedure?tab-language=python/>
+
+9. Install Libraries for support of python with webots:
+```
+	pip install ikpy
+	pip install lxml
+```
+
+10. For Pycharm support follow the below steps:
+	1. Open pycharm project
+	2. Select File > Settings > Python Interpreter > add > Conda Envirnoment.
+	3. Select Exisiting Envirnoment > Select "AIMachine" envirnoment > Press OK.
+	4. Open Edit Configration.
+	5. Add the following envirnoment variables :
+	```
+	 LD_LIBRARY_PATH = /usr/local/webots/lib/controller
+	 WEBOTS_ROBOT_NAME = UR10e
+	```
+	6. Press Ok.
+
+11. For Webots support follow the below steps:
+	1. Open Webots application
+	2. Select File > Open Sample World > robots > universal_robots > ure.wbt > Press Ok.
+	3. In Project Structure, present on left side > Select UR10e node
+	4. Set the following properties og this node:
+	```
+	 controller = <extern>
+	 sychrinization = TRUE
+	```
+	Run the Simulation
+
 
 ## Usage:
 1. In order to run the server enter the command:
