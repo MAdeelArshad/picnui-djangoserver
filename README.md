@@ -120,7 +120,7 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 	 controller = <extern>
 	 sychrinization = TRUE
 	```
-	Run the Simulation
+	5. Run the Simulation
 
 
 ## Usage:
