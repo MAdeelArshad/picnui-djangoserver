@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'picnui_server.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 't2',
+        'NAME': 'picnui',
     }
 }
 
