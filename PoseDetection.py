@@ -60,7 +60,7 @@ class PoseEstimation(object):
         transformed_pose2d, weights = self.args["pose"].transform_joints(pose_2d_mpiis, visibilities)
         pose_3d = self.args["pose"].compute_3d(transformed_pose2d, weights)
         keypoints = pose_3d[0].transpose()
-        keypoints = keypoints / 100
+        keypoints = keypoints
 
         return keypoints[13]
 

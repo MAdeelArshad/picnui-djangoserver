@@ -1,5 +1,5 @@
 
-import socket
+import socket, pickle
 from django.http import JsonResponse, HttpResponse
 from rest_framework import decorators, permissions
 import json
@@ -8,6 +8,7 @@ from PoseDetection import PoseEstimation
 from collections import OrderedDict
 from server.models import *
 from TrainModel import trainModel
+
 
 # args = {
 #     "model": 'cmu',
@@ -427,30 +428,36 @@ def TriggerWebotsSimEvent(request):
     errorCheckStatus = False
     errorMessage = ''
 
+    pointsArr = reqData['Points']
+
+    for i in range(0, len(pointsArr)):
+        pointsArr[i] = [pointsArr[i]['x'], pointsArr[i]['y'], pointsArr[i]['z']]
+
+    print("Points Array: ")
+    print(pointsArr)
+
+
+
     s = socket.socket()
     print("Socket successfully created")
     port = 4096
     try:
-        s.bind(('', port))
-        print("socket binded to %s" % (port))
-        # put the socket into listening mode
-        s.listen(5)
-        print("socket is listening")
+        # connect to the server on local computer
+        s.connect(('127.0.0.1', port))
+        data_string = pickle.dumps(pointsArr)
+        s.send(data_string)
+
     except Exception as e:
-        errorCheckStatus = True
-        errorMessage = str(e)
+
         print(str(e))
         # print("Something went wrong")
     finally:
-        # s.close()
-        if errorCheckStatus == False:
-            while True:
-                c, addr = s.accept()
-                print('Got connection from', addr)
-                reply = 'Thank you for connecting'
-                command = 'MOVE_L | 3.0 | 35'
-                c.send(command.encode('utf-8'))
-                c.close()
+
+
+        # close the connection
+        s.close()
+
+
 
 
 
