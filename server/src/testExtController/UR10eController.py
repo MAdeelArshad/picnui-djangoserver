@@ -85,9 +85,8 @@ def Deyploy_Waypoints(waypoints):
 
 
     for pos in joints_pos:
-        print("Inside For")
-
-
+        print ("sdfasdfasdgfsad")
+        print(type(pos))
 
         if len(pos) == 6:
 
@@ -98,7 +97,7 @@ def Deyploy_Waypoints(waypoints):
             wrist2_motor.setPosition(pos[4])
             wrist3_motor.setPosition(pos[5])
 
-        time.sleep(0.5)
+
         # print("Sensor Type: ", sholder_lift_motor_sensor.getType())
         # print("Sensor Value: ", sholder_lift_motor_sensor.getValue())
         # print("Motor Value: ", sholder_lift_motor.getTargetPosition())
@@ -119,7 +118,6 @@ def Deyploy_Waypoints(waypoints):
         new_wrist3 = wrist3_motor_sensor.getValue()
 
         while robot.step(timestep) != -1:
-            print("=======================")
             # print("Motor Sensor Value: ", sholder_pan_motor_sensor.getValue())
             # print("Target Position: ", pos[0])
             # print("Motor Sensor Value: ", sholder_lift_motor_sensor.getValue())
@@ -135,10 +133,9 @@ def Deyploy_Waypoints(waypoints):
             # print(type(wrist3_motor_sensor.getValue()))
             # print(type(float(pos[5])))
             # print(type(pos[5]))
-            print("=======================")
             if new_pan==previous_pan and new_shoulder == previous_shoulder and new_elbow == previous_elbow and new_wrist1==previous_wrist1 and new_wrist2==previous_wrist2 and new_wrist3==previous_wrist3:
                 print ("in stopping infinte loop")
-                time.sleep(0.5)
+                time.sleep(0.07)
                 previous_pan = 0
                 previous_shoulder = 0
                 previous_elbow = 0

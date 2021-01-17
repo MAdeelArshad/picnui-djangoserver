@@ -76,7 +76,8 @@ def getJointsPosition(r, waypoints):
     print(didLinksInitialized(LinksList))
     if(didLinksInitialized(LinksList)):
         UR10_Chain = chain.Chain(LinksList, LinkActiveMask, 'UR10e Chain')
-        res = []
+        res = [np.array([-0.65, -1.6, 0, -0.228571428571, 0, 0])] #go to reset pos first and then go to given points
+        #
         for p in waypoints:
             res.append(UR10_Chain.inverse_kinematics(p, [-4.2146848e-08, 0, 0], "X"))
         return res
