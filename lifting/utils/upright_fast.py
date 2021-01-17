@@ -203,7 +203,7 @@ def estimate_a_and_r_with_res_weights(
             p_copy[:] = proj_e
             p_copy[:, :points * 2] *= weights[j]
             a[i, :, j], comp_residual, _, _ = np.linalg.lstsq(
-                p_copy.T, res[j].T)
+                p_copy.T, res[j].T,rcond=None)
             if not comp_residual:
                 # equations are over-determined
                 residue[i, j] = 1e-5

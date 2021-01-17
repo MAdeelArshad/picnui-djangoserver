@@ -23,7 +23,6 @@ class PoseEstimation(object):
         image = None
         ret_val = 0
         camera = 0
-
         if option == "camera":
             cam = cv.VideoCapture(camera)
             ret_val, image = cam.read()
@@ -43,6 +42,7 @@ class PoseEstimation(object):
     # creating window inilatizing graph objects
     def __init__(self, args, option='camera'):
         self.args = args
+        self.fpsTime=0
         self.option = option
         self.app = QtGui.QApplication(sys.argv)
         self.window = GLViewWidget()
@@ -62,6 +62,7 @@ class PoseEstimation(object):
         self.window.addItem(gy)
         self.window.addItem(gz)
         self.lines = {}
+        keypoints = []
         self.connection = [
             [0, 1], [1, 2], [2, 3], [0, 4], [4, 5], [5, 6],
             [0, 7], [7, 8], [8, 9], [9, 10], [8, 11], [11, 12],
@@ -81,6 +82,7 @@ class PoseEstimation(object):
 
         self.poseLifting = Prob3dPose('lifting/prob_model/prob_model_params.mat')
         try:
+
             keypoints = self.mesh(image)
         except AssertionError:
             print("body not in image")
@@ -115,6 +117,7 @@ class PoseEstimation(object):
 
     def mesh(self, image):
         # image_h, image_w = image.shape[:2]
+
         width = 640
         height = 480
         pose_2d_mpiis = []
@@ -122,6 +125,14 @@ class PoseEstimation(object):
 
         humans = self.e.inference(image, resize_to_default=(self.w > 0 and self.h > 0),
                                   upsample_size=self.args.resize_out_ratio)
+        image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
+        cv.putText(image,
+                    "FPS: %f" % (1.0 / (time.time() - self.fpsTime)),
+                    (10, 10), cv.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (0, 255, 0), 2)
+        cv.imshow('tf-pose-estimation result', image)
+        self.fpsTime= time.time()
+
         # image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
         # cv2.putText(image,
         #             "FPS: %f" % (1.0 / (time.time() - terrain.fps_time)),
@@ -152,7 +163,7 @@ class PoseEstimation(object):
 
     """
     return 3d keypoints
-    
+
     """
 
     def update(self):
@@ -161,6 +172,11 @@ class PoseEstimation(object):
                 """
         # ret_val, image = terrain.get_video()
         # ret_val, image = self.cam.read()
+        if cv.waitKey(1) & 0xFF == 27:
+            cv.destroyAllWindows()
+            sys.exit()
+
+        keypoints = []
         image, ret_val = PoseEstimation.getframe(self.args.option)
         try:
             keypoints = self.mesh(image)
@@ -186,7 +202,7 @@ class PoseEstimation(object):
             QtGui.QApplication.instance().exec_()
 
     def animation(self, frametime=10):
-        """
+        """u
         calls the update method to run in a loop
         """
         if not (self.option.__contains__("/") or self.option == "camera_image"):
