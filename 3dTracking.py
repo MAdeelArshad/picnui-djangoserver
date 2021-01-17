@@ -18,7 +18,7 @@ from lifting.utils.prob_model import Prob3dPose
 
 
 class PoseEstimation(object):
-    @staticmethod/home/moazzam/FYP-project/picnui-djangoserver
+    @staticmethod
     def getframe(option):
         image = None
         ret_val = 0
