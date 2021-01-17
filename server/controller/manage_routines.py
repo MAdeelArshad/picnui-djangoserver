@@ -1,14 +1,11 @@
-
 import socket, pickle
 from django.http import JsonResponse, HttpResponse
 from rest_framework import decorators, permissions
 import json
 from django.core import serializers
-from PoseDetection import PoseEstimation
-from collections import OrderedDict
+from server.src.Tracking.PoseDetection import PoseEstimation
 from server.models import *
-from TrainModel import trainModel
-
+from server.src.Tracking.TrainModel import train_model
 
 # args = {
 #     "model": 'cmu',
@@ -17,7 +14,8 @@ from TrainModel import trainModel
 #     "tensorrt": "False"
 # }
 
-pose = PoseEstimation(args=trainModel())
+pose = PoseEstimation(args=train_model())
+
 #    ______________    Recorded Video    ______________________
 
 @decorators.api_view(["POST"])
@@ -25,7 +23,7 @@ pose = PoseEstimation(args=trainModel())
 def RecordedVideoEvent(request):
     reqData = json.loads(request.body)
     print("Option: ", reqData['option'])
-    print("File Path: ",reqData['url'])
+    print("File Path: ", reqData['url'])
     print("File Path: ", reqData['url'])
     return HttpResponse({'status': 200})
 
@@ -69,26 +67,28 @@ def CameraLiveStreamEvent(request):
 def CameraStaticImageEvent(request):
     reqData = json.loads(request.body)
 
+
     print('DATA: ', reqData)
     print("Option: ", reqData['option'])
 
-    
     print("File Path: ", reqData['url'])
 
     try:
         keypoints = pose.getKeypoints(option=reqData['option'])
+
+
     except:
         return JsonResponse({'status': 502})
     else:
         print("keypoints", keypoints)
 
         data = {
-        "status": 200,
-        "points": {'x': keypoints[0],
-                    'y': keypoints[1],
-                    'z': keypoints[2],
-                   'image': "CameraImage"}
-    }
+            "status": 200,
+            "points": {'x': keypoints[0],
+                       'y': keypoints[1],
+                       'z': keypoints[2],
+                       'image': "CameraImage"},
+        }
     return JsonResponse(data)
 
 
@@ -116,7 +116,7 @@ def KinectStaticImageEvent(request):
             "points": {'x': keypoints[0],
                        'y': keypoints[1],
                        'z': keypoints[2],
-                       'image': "Kinect Image"}
+                       'image': "CameraImage"},
         }
     return JsonResponse(data)
 
@@ -138,16 +138,18 @@ def StaticImageEvent(request):
 
     except:
         return JsonResponse({'status': 502})
-
     else:
         print("keypoints", keypoints)
 
         data = {
             "status": 200,
-            "points": {'x': keypoints[0],
-                       'y': keypoints[1],
-                       'z': keypoints[2],
-                       'image': reqData['url']}
+            "points": {
+                'x': keypoints[0],
+                'y': keypoints[1],
+                'z': keypoints[2],
+                'image': reqData['url']
+            }
+
         }
     return JsonResponse(data)
 
@@ -157,12 +159,10 @@ def StaticImageEvent(request):
 @decorators.api_view(["POST"])
 @decorators.permission_classes([permissions.AllowAny])
 def SaveRoutineEvent(request):
-
     reqData = json.loads(request.body)
 
-    print('DATA: ',reqData)
+    print('DATA: ', reqData)
     print(type(reqData))
-
 
     print(reqData['RoutineName'])
     for p in reqData['Points']:
@@ -171,12 +171,10 @@ def SaveRoutineEvent(request):
     routine = Routine(name=reqData['RoutineName'])
     routine.save()
     for p in reqData['Points']:
-
-        point = Points(points=p,routine=routine)
+        point = Points(points=p, routine=routine)
         point.save()
-        print("point id: " , point.id)
-        print("point routine id: " , point.routine.id)
-
+        print("point id: ", point.id)
+        print("point routine id: ", point.routine.id)
 
     # rp = RobotProfile(name="Example 1")
     #
@@ -189,7 +187,6 @@ def SaveRoutineEvent(request):
     print(Points.objects.all())
 
     return JsonResponse(reqData, safe=False)
-
 
 
 #    ______________    Get All Routines Event    ______________________
@@ -226,13 +223,10 @@ def GetRoutinesEvent(request):
             })
             duplicateChecker.append(routinePK)
 
-
-
-
-
     routineData = {'routineData': ResponsePointArray}
 
     return JsonResponse(routineData, safe=False)
+
 
 #    ______________    Delete Routine Event    ______________________
 
@@ -240,7 +234,6 @@ def GetRoutinesEvent(request):
 @decorators.api_view(["DELETE"])
 @decorators.permission_classes([permissions.AllowAny])
 def DeleteRoutineEvent(request):
-
     reqData = json.loads(request.body)
     print(reqData)
 
@@ -263,36 +256,29 @@ def DeleteRoutineEvent(request):
 @decorators.api_view(["PUT"])
 @decorators.permission_classes([permissions.AllowAny])
 def UpdateRoutineEvent(request):
-
     reqData = json.loads(request.body)
     print(reqData)
-
 
     r = Routine.objects.get(id=reqData['routineID'])
     r.name = reqData['newRoutineName']
     r.save()
 
-
     routineData = {'isUpdated': True}
 
     return JsonResponse(routineData, safe=False)
+
 
 #    ______________    Save Robot Profile Event    ______________________
 
 @decorators.api_view(["POST"])
 @decorators.permission_classes([permissions.AllowAny])
 def SaveRobotProfileEvent(request):
-
     reqData = json.loads(request.body)
 
-    print('DATA: ',reqData)
-
-
+    print('DATA: ', reqData)
 
     profile = RobotProfile(name=reqData['ProfileName'], linkedRoutine=reqData['LinkedRoutine'])
     profile.save()
-
-
 
     return JsonResponse({'isSaved': True}, safe=False)
 
@@ -302,20 +288,14 @@ def SaveRobotProfileEvent(request):
 @decorators.api_view(["GET"])
 @decorators.permission_classes([permissions.AllowAny])
 def GetRobotProfilesEvent(request):
-
     Profiles = []
     rawProfiles = json.loads(serializers.serialize('json', RobotProfile.objects.all()))
     for p in rawProfiles:
         Profiles.append({'profilePK': p['pk'], 'profile': p['fields']})
 
-
-
     print(Profiles)
 
-
-
     return JsonResponse({'ProfilesList': Profiles}, safe=False)
-
 
 
 #    ______________    Delete Robot Profile Event    ______________________
@@ -324,7 +304,6 @@ def GetRobotProfilesEvent(request):
 @decorators.api_view(["DELETE"])
 @decorators.permission_classes([permissions.AllowAny])
 def DeleteRobotProfileEvent(request):
-
     reqData = json.loads(request.body)
     print(reqData)
 
@@ -347,10 +326,8 @@ def DeleteRobotProfileEvent(request):
 @decorators.api_view(["PUT"])
 @decorators.permission_classes([permissions.AllowAny])
 def UpdateRobotProfileEvent(request):
-
     reqData = json.loads(request.body)
     print(reqData)
-
 
     try:
         p = RobotProfile.objects.get(id=reqData['profilePK'])
@@ -366,6 +343,7 @@ def UpdateRobotProfileEvent(request):
         routineData = {'isUpdated': False}
 
     return JsonResponse(routineData, safe=False)
+
 
 #    ______________    Get All Robot Profiles Along with Linked routines Event    ______________________
 
@@ -427,7 +405,6 @@ def TriggerWebotsSimEvent(request):
 
     errorCheckStatus = False
     errorMessage = ''
-
     pointsArr = reqData['Points']
 
     for i in range(0, len(pointsArr)):
@@ -435,8 +412,6 @@ def TriggerWebotsSimEvent(request):
 
     print("Points Array: ")
     print(pointsArr)
-
-
 
     s = socket.socket()
     print("Socket successfully created")
@@ -448,24 +423,14 @@ def TriggerWebotsSimEvent(request):
         s.send(data_string)
 
     except Exception as e:
-
         print(str(e))
         # print("Something went wrong")
     finally:
-
-
         # close the connection
         s.close()
+        data = {'errorMessage': errorMessage, 'errorCheckStatus': errorCheckStatus}
+        return JsonResponse(data, safe=False)
 
-
-
-
-
-
-
-    data = {'errorMessage': errorMessage, 'errorCheckStatus': errorCheckStatus}
-
-    return JsonResponse(data, safe=False)
 
 #    ______________    Trigger UR Simulation Event    ______________________
 

@@ -1,11 +1,14 @@
 import sys
+import threading
 import time
-
+import _thread
 import cv2 as cv
 import freenect
 import numpy as np
+from PIL import Image,ImageShow
 
 import tf_pose.common as common
+from tf_pose.estimator import TfPoseEstimator
 
 
 def get_camera_image():
@@ -18,6 +21,7 @@ class PoseEstimation(object):
 
     def __init__(self, args):
         self.args = args
+        self.window_counter = 0
 
     def get_frame(self):
 
@@ -45,9 +49,10 @@ class PoseEstimation(object):
         visibilities = []
 
         humans = self.args["estimator"].inference(image, resize_to_default=(
-                    self.args["width"] > 0 and self.args["height"] > 0),
+                self.args["width"] > 0 and self.args["height"] > 0),
                                                   upsample_size=float(4))
 
+        structure = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
         for human in humans:
             pose_2d_mpii, visibility = common.MPIIPart.from_coco(human)
             pose_2d_mpiis.append(
@@ -60,19 +65,34 @@ class PoseEstimation(object):
         transformed_pose2d, weights = self.args["pose"].transform_joints(pose_2d_mpiis, visibilities)
         pose_3d = self.args["pose"].compute_3d(transformed_pose2d, weights)
         keypoints = pose_3d[0].transpose()
-        keypoints = keypoints
+        output=Image.fromarray(cv.cvtColor(structure, cv.COLOR_RGB2BGR))
+        ImageShow.show(output,title=self.url)
+
+        # window_name = "image " + str(self.window_counter)
+        # structure=ResizeWithAspectRatio(image=structure,height=786)
+        #
+        # cv.imshow(window_name, structure)
+        # cv.waitKey(10)
+        # thread = myThread(self.window_counter, name=window_name)
+        # thread.start()
+        # _thread.start_new_thread(create_window(),window_name)
+
+        # keypoints = keypoints
+
+        """
+        return 3d keypoints
+
+        """
 
         return keypoints[13]
 
-    """
-    return 3d keypoints
 
-    """
-
-    def getKeypoints(self, option=None, url=None):
+    def getKeypoints(self, option=None, url=None, ):
         self.option = option
         self.url = url
         image = self.get_frame()
+        self.window_counter = self.window_counter+1
+        print(self.window_counter)
         try:
             keypoints = self.mesh(image)
         except AssertionError:
@@ -81,3 +101,36 @@ class PoseEstimation(object):
 
         else:
             return keypoints
+
+# class myThread (threading.Thread):
+#    def __init__(self, threadID, name):
+#       threading.Thread.__init__(self)
+#       self.threadID = threadID
+#       self.name = name
+#    def run(self):
+#       print ("Starting " +str(self.threadID) )
+#       create_window(window_name=self.name)
+#       print ("Exiting " + self.window_name)
+
+# def create_window(window_name):
+#     print("inilize thread "+str(window_name)
+#     while True:
+#         if cv.waitKey(1) & 0xFF == 27:
+#             cv.destroyAllWindows()
+#             cv.waitKey(10)
+#             break
+#     pass
+# def ResizeWithAspectRatio(image, width=None, height=None, inter=cv.INTER_AREA):
+#     dim = None
+#     (h, w) = image.shape[:2]
+#
+#     if width is None and height is None:
+#         return image
+#     if width is None:
+#         r = height / float(h)
+#         dim = (int(w * r), height)
+#     else:
+#         r = width / float(w)
+#         dim = (width, int(h * r))
+#
+#     return cv.resize(image, dim, interpolation=inter)
