@@ -6,7 +6,7 @@ from django.core import serializers
 from server.src.Tracking.PoseDetection import PoseEstimation
 from server.models import *
 from server.src.Tracking.TrainModel import train_model
-
+from collections import OrderedDict
 # args = {
 #     "model": 'cmu',
 #     "resize": '0x0',
@@ -87,7 +87,7 @@ def CameraStaticImageEvent(request):
             "points": {'x': keypoints[0],
                        'y': keypoints[1],
                        'z': keypoints[2],
-                       'image': "CameraImage"},
+                       'image': "Camera Image"},
         }
     return JsonResponse(data)
 
@@ -116,7 +116,7 @@ def KinectStaticImageEvent(request):
             "points": {'x': keypoints[0],
                        'y': keypoints[1],
                        'z': keypoints[2],
-                       'image': "CameraImage"},
+                       'image': "Kinect Image"},
         }
     return JsonResponse(data)
 

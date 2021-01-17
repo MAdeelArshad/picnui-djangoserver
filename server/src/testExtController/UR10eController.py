@@ -2,6 +2,12 @@
 
 # You may need to import some classes of the controller module. Ex:
 #  from controller import Robot, Motor, DistanceSensor
+from hmac import new
+
+from dask.array import round
+from fire.decorators_test import double
+from gevent.select import poll
+from numpy import double
 from sympy import floor
 
 from controller import Robot
@@ -57,47 +63,92 @@ def Deyploy_Waypoints(waypoints):
     print(get_robot_state)
     joints_pos = getJointsPosition(get_robot_state, waypoints)
     print("------")
-    print(joints_pos)
+    print("Joint Motor Positions: " ,joints_pos)
     print("------")
 
     c = 0
+    pan = 0.0; shoulder = 0.0; elbow = 0.0; wrist1 = 0.0; wrist2 = 0.0; wrist3 = 0.0;
 
     while robot.step(timestep) != -1:
+        # sholder_lift_motor.setPosition(-1.6)
+        # elbow_lift_motor.setPosition(0.0)
         break
+
+    # time.sleep(.10)
+    previous_pan = 0
+    previous_shoulder = 0
+    previous_elbow = 0
+    previous_wrist3 = 0
+    previous_wrist2 = 0
+    previous_wrist1 = 0
 
     for pos in joints_pos:
         print("Inside For")
-        print("Sensor Type: ", sholder_pan_motor_sensor.getType())
-        print("Sensor Value: ", sholder_pan_motor_sensor.getValue())
-        print("Motor Value: ", shoulder_pan_motor.getTargetPosition())
 
-        start = time.time()
+        if len(pos) == 6:
+            shoulder_pan_motor.setPosition(pos[0])
+            sholder_lift_motor.setPosition(pos[1])
+            elbow_lift_motor.setPosition(pos[2])
+            wrist1_motor.setPosition(pos[3])
+            wrist2_motor.setPosition(pos[4])
+            wrist3_motor.setPosition(pos[5])
+
+        # print("Sensor Type: ", sholder_lift_motor_sensor.getType())
+        # print("Sensor Value: ", sholder_lift_motor_sensor.getValue())
+        # print("Motor Value: ", sholder_lift_motor.getTargetPosition())
+        # print(round(sholder_lift_motor_sensor.getValue(), 3))
+        # print(round(pos[1], 3))
+        # print("Target Position: ", pos[1])
+
+        # print("Diff: ", sholder_lift_motor.getTargetPosition() + (pos[1]))
+
+        # start = time.time()
 
 
+        new_pan = sholder_pan_motor_sensor.getValue()
+        new_shoulder = sholder_lift_motor_sensor.getValue()
+        new_elbow = elbow_lift_motor_sensor.getValue()
+        new_wrist1 = wrist1_motor_sensor.getValue()
+        new_wrist2 = wrist2_motor_sensor.getValue()
+        new_wrist3 = wrist3_motor_sensor.getValue()
 
         while robot.step(timestep) != -1:
+            print("=======================")
+            # print("Motor Sensor Value: ", sholder_pan_motor_sensor.getValue())
+            # print("Target Position: ", pos[0])
+            # print("Motor Sensor Value: ", sholder_lift_motor_sensor.getValue())
+            # print("Target Position: ", pos[1])
+            # print("Motor Sensor Value: ", elbow_lift_motor_sensor.getValue())
+            # print("Target Position: ", pos[2])
+            # print("Motor Sensor Value: ", wrist1_motor_sensor.getValue())
+            # print("Target Position: ", pos[3])
+            # print("Motor Sensor Value: ", wrist2_motor_sensor.getValue())
+            # print("Target Position: ", pos[4])
+            # print("Motor Sensor Value: ", wrist3_motor_sensor.getValue())
+            # print("Target Position: ", pos[5])
+            # print(type(wrist3_motor_sensor.getValue()))
+            # print(type(float(pos[5])))
+            # print(type(pos[5]))
+            print("=======================")
+            if new_pan==previous_pan and new_shoulder == previous_shoulder and new_elbow == previous_elbow and new_wrist1==previous_wrist1 and new_wrist2==previous_wrist2 and new_wrist3==previous_wrist3:
+                print ("in stopping infinte loop")
+                time.sleep(1)
+                break
+            else :
+                previous_pan = new_pan
+                previous_shoulder = new_shoulder
+                previous_elbow = new_elbow
+                previous_wrist3 = new_wrist3
+                previous_wrist2 = new_wrist2
+                previous_wrist1 = new_wrist1
 
-            try:
-                if len(pos) == 6:
-                    shoulder_pan_motor.setPosition(pos[0])
-                    sholder_lift_motor.setPosition(pos[1])
-                    elbow_lift_motor.setPosition(pos[2])
-
-                    wrist1_motor.setPosition(pos[3]*10)
-                    wrist2_motor.setPosition(pos[4])
-                    wrist3_motor.setPosition(pos[5])
-                    c = c + 1
-                    # print(pos)
-                    # time.sleep(.6)
-
-
-            except Exception as ex:
-                print(ex)
-            finally:
-                end = time.time()
-                # print(end - start)
-                if (end - start) > 8:
-                    break
+                new_pan = sholder_pan_motor_sensor.getValue()
+                new_shoulder = sholder_lift_motor_sensor.getValue()
+                new_elbow = elbow_lift_motor_sensor.getValue()
+                new_wrist1 = wrist1_motor_sensor.getValue()
+                new_wrist2 = wrist2_motor_sensor.getValue()
+                new_wrist3 = wrist3_motor_sensor.getValue()
+                time.sleep(1/1000)
 
 
 
@@ -137,7 +188,7 @@ try:
 
 
 
-        print(data_arr)
+        print("Points received from frontend: " , data_arr)
 
         Deyploy_Waypoints(data_arr)
 
