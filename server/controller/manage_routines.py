@@ -3,6 +3,8 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework import decorators, permissions
 import json
 from django.core import serializers
+from sympy import primenu
+
 from server.src.Tracking.PoseDetection import PoseEstimation
 from server.models import *
 from server.src.Tracking.TrainModel import train_model
@@ -351,7 +353,7 @@ def UpdateRobotProfileEvent(request):
 @decorators.permission_classes([permissions.AllowAny])
 def GetRobotProfilesWithRoutineEvent(request):
     reqData = json.loads(request.body)
-    print(reqData)
+    print("Robot Profile with Linked Routine REQUEST data: ", reqData)
 
     ResponsePointArray = []
     duplicateChecker = []
@@ -382,16 +384,16 @@ def GetRobotProfilesWithRoutineEvent(request):
 
     # routineData = {'routineData': ResponsePointArray}
 
-    routine = {}
-
+    resultant_routine = {}
+    # print("Response Array: " , ResponsePointArray)
     for e in ResponsePointArray:
-        if e['routineID'] == reqData['routinePK']:
-            routine = e
+        if e['routineID'] == int(reqData['routinePK']):
+            resultant_routine = e
             break
 
-    print(routine)
+    # print("Sending Routine" , resultant_routine)
 
-    return JsonResponse(routine, safe=False)
+    return JsonResponse(resultant_routine, safe=False)
 
 
 #    ______________    Trigger Webots Simulation Event    ______________________
