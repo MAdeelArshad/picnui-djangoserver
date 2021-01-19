@@ -141,7 +141,16 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 			WEBOTS_ROBOT_NAME = UR10e
 			```
 			6. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
-			7. In the working directory field, select the path to the testExtController folder presnet within the src folder of the project.
+			7. In the working directory field, select the path to the testExtController folder present within the src folder of the project.
+			8. Make check the below two checkboxes and press Apply and then Ok. 
+		3. 3dTracking.py configuration:
+			1. Click on "Add new Configuration" and then select python.
+			2. Enter the name = "liveTracking".
+			3. In script path, select the 3dTracking.py script path present within the project.
+			4. Enter the parameters to "--model=mobilenet_thin".
+			5. In Project field, select the root folder of the project.
+			6. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
+			7.  In the working directory field, select the path to the picnui-djangoserver folder.
 			8. Make check the below two checkboxes and press Apply and then Ok. 
 
 11. For Webots support follow the below steps:
@@ -157,6 +166,11 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 	```
 	7. Run the Simulation
 
+12. Increase the Watcher Limit:
+	1. Type the following command in the pycharm terminal:
+	```
+		echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+	```
 
 ## Usage:
 1. In order to run the server enter the command:
