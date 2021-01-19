@@ -100,27 +100,58 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 ```
 
 10. For Pycharm support follow the below steps:
-	1. Open pycharm project
+	1. Open the project in pycharm.
 	2. Select File > Settings > Python Interpreter > add > Conda Envirnoment.
-	3. Select Exisiting Envirnoment > Select "AIMachine" envirnoment > Press OK.
-	4. Open Edit Configration.
-	5. Add the following envirnoment variables :
+	3. Select Exisiting Envirnoment > Select "AIMachine" envirnoment > Press Apply.
+	4. Select Project Structure from the project explorer panel present at left side.
+	5. Click on "Add Content Root" Button and the path chooser dialog box will appear.
+	6. Select the python38 folder which resides in the installation directory of the webots and press Ok.
+	7. The path will look like as follows:
 	```
-	 LD_LIBRARY_PATH = /usr/local/webots/lib/controller
-	 WEBOTS_ROBOT_NAME = UR10e
+	/usr/local/webots/lib/controller/python38
 	```
-	6. Press Ok.
+	8. To find the installation directory of webots in ubuntu or linux, just type the following command on the terminal.
+	```
+	which webots
+	```
+	9. Open Edit Configration present on top right corner besides the run button.
+	10. Add the following configurations:
+		1. manage.py configuration: 
+				1. Click on "Add new Configuration" and then select python.
+				2. Enter the name = "manage".
+				3. In script path, select the manage.py script path present within the project.
+				4. Enter the parameters to "runserver".
+				5. In Project field, select the root folder of the project.
+				6. In Envirnoment Variables, add the following envirnoment variables:
+						LD_LIBRARY_PATH = /usr/local/webots/lib/controller
+				 		WEBOTS_ROBOT_NAME = UR10e
+				7. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
+				8. In the working directory field, select the path to the project root folder (picnui-djangoserver).
+				7. Make check the below two checkboxes and press Apply and then Ok. 
+		2. UR10eController.py configuration:
+				1. Click on "Add new Configuration" and then select python.
+				2. Enter the name = "UR10eController".
+				3. In script path, select the UR10eController.py script path present within the project.
+				4. In Project field, select the root folder of the project.
+				5. In Envirnoment Variables, add the following envirnoment variables:
+						LD_LIBRARY_PATH = /usr/local/webots/lib/controller
+				 		WEBOTS_ROBOT_NAME = UR10e
+				6. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
+				7. In the working directory field, select the path to the testExtController folder presnet within the src folder of the project.
+				8. Make check the below two checkboxes and press Apply and then Ok. 
 
 11. For Webots support follow the below steps:
 	1. Open Webots application
-	2. Select File > Open Sample World > robots > universal_robots > ure.wbt > Press Ok.
-	3. In Project Structure, present on left side > Select UR10e node
-	4. Set the following properties og this node:
+	2. Select File > Open  World and a file chooser will appear.
+	3. Navigate to the following file within the picnui-djangoserver project.
+	4. Select server > src > testExtController > ure.wbt and press OK. The Virtual World will be loaded. 
+	5. In Project Structure panel present on left side > Select UR10e node.
+	6. Set the following properties of this node:
 	```
 	 controller = <extern>
 	 sychrinization = TRUE
 	```
-	5. Run the Simulation
+	7. Run the Simulation
 
 
 ## Usage:
