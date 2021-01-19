@@ -123,8 +123,10 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 			4. Enter the parameters to "runserver".
 			5. In Project field, select the root folder of the project.
 			6. In Envirnoment Variables, add the following envirnoment variables:
-					LD_LIBRARY_PATH = /usr/local/webots/lib/controller
-			 		WEBOTS_ROBOT_NAME = UR10e
+			```
+			LD_LIBRARY_PATH = /usr/local/webots/lib/controller
+			 WEBOTS_ROBOT_NAME = UR10e
+			```
 			7. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
 			8. In the working directory field, select the path to the project root folder (picnui-djangoserver).
 			7. Make check the below two checkboxes and press Apply and then Ok. 
@@ -134,8 +136,10 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 			3. In script path, select the UR10eController.py script path present within the project.
 			4. In Project field, select the root folder of the project.
 			5. In Envirnoment Variables, add the following envirnoment variables:
-					LD_LIBRARY_PATH = /usr/local/webots/lib/controller
-			 		WEBOTS_ROBOT_NAME = UR10e
+			```
+			LD_LIBRARY_PATH = /usr/local/webots/lib/controller
+			WEBOTS_ROBOT_NAME = UR10e
+			```
 			6. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
 			7. In the working directory field, select the path to the testExtController folder presnet within the src folder of the project.
 			8. Make check the below two checkboxes and press Apply and then Ok. 
