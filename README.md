@@ -117,28 +117,28 @@ The below image calculate the 3d point cloud and show it in PYQTGraph
 	9. Open Edit Configration present on top right corner besides the run button.
 	10. Add the following configurations:
 		1. manage.py configuration: 
-				1. Click on "Add new Configuration" and then select python.
-				2. Enter the name = "manage".
-				3. In script path, select the manage.py script path present within the project.
-				4. Enter the parameters to "runserver".
-				5. In Project field, select the root folder of the project.
-				6. In Envirnoment Variables, add the following envirnoment variables:
-						LD_LIBRARY_PATH = /usr/local/webots/lib/controller
-				 		WEBOTS_ROBOT_NAME = UR10e
-				7. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
-				8. In the working directory field, select the path to the project root folder (picnui-djangoserver).
-				7. Make check the below two checkboxes and press Apply and then Ok. 
+			1. Click on "Add new Configuration" and then select python.
+			2. Enter the name = "manage".
+			3. In script path, select the manage.py script path present within the project.
+			4. Enter the parameters to "runserver".
+			5. In Project field, select the root folder of the project.
+			6. In Envirnoment Variables, add the following envirnoment variables:
+					LD_LIBRARY_PATH = /usr/local/webots/lib/controller
+			 		WEBOTS_ROBOT_NAME = UR10e
+			7. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
+			8. In the working directory field, select the path to the project root folder (picnui-djangoserver).
+			7. Make check the below two checkboxes and press Apply and then Ok. 
 		2. UR10eController.py configuration:
-				1. Click on "Add new Configuration" and then select python.
-				2. Enter the name = "UR10eController".
-				3. In script path, select the UR10eController.py script path present within the project.
-				4. In Project field, select the root folder of the project.
-				5. In Envirnoment Variables, add the following envirnoment variables:
-						LD_LIBRARY_PATH = /usr/local/webots/lib/controller
-				 		WEBOTS_ROBOT_NAME = UR10e
-				6. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
-				7. In the working directory field, select the path to the testExtController folder presnet within the src folder of the project.
-				8. Make check the below two checkboxes and press Apply and then Ok. 
+			1. Click on "Add new Configuration" and then select python.
+			2. Enter the name = "UR10eController".
+			3. In script path, select the UR10eController.py script path present within the project.
+			4. In Project field, select the root folder of the project.
+			5. In Envirnoment Variables, add the following envirnoment variables:
+					LD_LIBRARY_PATH = /usr/local/webots/lib/controller
+			 		WEBOTS_ROBOT_NAME = UR10e
+			6. Make sure that the python interpreter is set to "AIMachine" conda envirnoment.
+			7. In the working directory field, select the path to the testExtController folder presnet within the src folder of the project.
+			8. Make check the below two checkboxes and press Apply and then Ok. 
 
 11. For Webots support follow the below steps:
 	1. Open Webots application
