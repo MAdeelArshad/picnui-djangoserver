@@ -1,3 +1,4 @@
+import os
 import socket, pickle
 from django.http import JsonResponse, HttpResponse
 from rest_framework import decorators, permissions
@@ -8,6 +9,7 @@ from sympy import primenu
 from server.src.Tracking.PoseDetection import PoseEstimation
 from server.models import *
 from server.src.Tracking.TrainModel import train_model
+import getpass
 from collections import OrderedDict
 # args = {
 #     "model": 'cmu',
@@ -442,5 +444,19 @@ def TriggerURSimEvent(request):
     reqData = json.loads(request.body)
     print(reqData)
     print("UR Simulation Event Triggered!")
+
+    f = open(os.path.expanduser('~')+"/Desktop/UR_shared/Waypoints.txt", "w")
+
+    for element in reqData['Points']:
+        print("--------")
+        print(element['x'])
+        print(element['y'])
+        print(element['z'])
+        f.write(str(element['x']) + ", " + str(element['y']) + ", " + str(element['z']) + "\n")
+        print("--------")
+
+
+    f.close()
+
 
     return JsonResponse({}, safe=False)
