@@ -48,24 +48,32 @@ class PoseEstimation(object):
         pose_2d_mpiis = []
         visibilities = []
 
+        # Re-samples the images and perform estimation
         humans = self.args["estimator"].inference(image, resize_to_default=(
                 self.args["width"] > 0 and self.args["height"] > 0),
                                                   upsample_size=float(4))
-
+        # creates the body structure containing body points
         structure = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
         for human in humans:
             pose_2d_mpii, visibility = common.MPIIPart.from_coco(human)
             pose_2d_mpiis.append(
                 [(int(y * height + 0.5), int(x * width + 0.5)) for x, y in pose_2d_mpii]
             )
+            # Contains the body points. If empty then body not found error encounter
             visibilities.append(visibility)
 
+        # Generate 2D points
         pose_2d_mpiis = np.array(pose_2d_mpiis)
         visibilities = np.array(visibilities)
+        # Generate 3D points of 17 joints of body
         transformed_pose2d, weights = self.args["pose"].transform_joints(pose_2d_mpiis, visibilities)
+        # pose_3d contains an matrix of size 17(body points)*3(x,y,z)
         pose_3d = self.args["pose"].compute_3d(transformed_pose2d, weights)
+        # Take Transpose of the matrix and return a matrix of size 3*17
         keypoints = pose_3d[0].transpose()
+        # chaning the color scheme of the image from RGB to BGR
         output=Image.fromarray(cv.cvtColor(structure, cv.COLOR_RGB2BGR))
+        # Displaying Image on the frontend
         ImageShow.show(output,title=self.url)
 
         # window_name = "image " + str(self.window_counter)
